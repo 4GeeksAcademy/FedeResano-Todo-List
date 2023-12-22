@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 const Home = () => {
-	const [inputContent, setInputContent] = useState("");
-	const [list, setList] = useState([]);
+	const [inputContent, setinputcontent] = useState("");
+	const [list, setlist] = useState([]);
+	const [hoveredIndex, setHoveredIndex] = useState(null);
 
 	return (
 		<div className="container">
@@ -12,23 +14,34 @@ const Home = () => {
 				<li>
 					<input
 						type="text"
-						onChange={(e) => setInputContent(e.target.value)}
+						onChange={(e) => setinputcontent(e.target.value)}
 						value={inputContent}
-						onKeyPress={(e) => e.key === "Enter" ? setList(list.concat(inputContent)) : null}
-						setInputContent=""
+						onKeyPress={(e) => {
+							if (e.key === "Enter" && inputContent !== "") {
+								setlist(list.concat(inputContent));
+								setinputcontent("");
+							}
+						}}
 						placeholder="Add items here">
-						<FontAwesomeIcon icon="fa-solid fa-xmark" />
 					</input>
 				</li>
 				{list.map((element, i) => (
-					<li>
-						{element} <FontAwesomeIcon icon="fa-solid fa-xmark" onClick={() => setList(list.filter((element, currentIndex) => i !== currentIndex))} />
+					<li key={i} className="list-element"
+						onMouseEnter={() => setHoveredIndex(i)}
+						onMouseLeave={() => setHoveredIndex(null)}
+					>
+						{element}
+						{hoveredIndex === i && (
+							<FontAwesomeIcon icon={faTimes} className="delete-icon" onClick={() => setlist(list.filter((element, currentIndex) => i !== currentIndex))} />
+						)}
 					</li>
 				))}
 			</ul>
-			<div>{list.length} tasks</div>
-		</div >
-	);
-};
-
+			{list.length === 0 ?
+				(<div> No tasks, add a task </div>) :
+				(<div> {list.length} tasks </div>)
+			}
+		</div>
+	)
+}
 export default Home;
